@@ -22,7 +22,7 @@ contract LowbLottery {
   bool public isPause;
   Round[] public rounds;
   mapping (address => bool) public whitelist;
-  mapping (address => uint[]) public luckyOf;
+  mapping (address => uint[]) private _luckyOf;
   
   constructor(address wallet_, address nft_) {
     walletAddress = wallet_;
@@ -39,6 +39,10 @@ contract LowbLottery {
   function setPause(bool b) public {
     require(msg.sender == owner, "You are not admin");
     isPause = b;
+  }
+  
+  function luckyOf(address user) public view returns (uint[] memory) {
+    return _luckyOf[user];
   }
   
   function getLuckyNumbers(uint id) public view returns (uint[10] memory) {
@@ -101,7 +105,7 @@ contract LowbLottery {
       if (whitelist[holder]) {
         nextRound.pool = nextRound.pool - rewards;
         wallet.award(holder, rewards);
-        luckyOf[holder].push(rounds.length-1);
+        _luckyOf[holder].push(rounds.length-1);
         whitelist[holder] = false;
       }
     }
